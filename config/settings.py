@@ -27,7 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,7 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework_simplejwt",
-    "accounts",
+    "feed.accounts",
 ]
 
 MIDDLEWARE = [
@@ -52,7 +51,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "feed.urls"
+ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
     {
@@ -70,7 +69,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "feed.wsgi.application"
+WSGI_APPLICATION = "config.wsgi.application"
 
 
 # Database
@@ -83,6 +82,7 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -93,6 +93,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    "OPTIONS" : {"min_length" : 10,}
     },
     {
         "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
