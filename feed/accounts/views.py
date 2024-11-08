@@ -1,7 +1,6 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
 from .serializers import CustomUserSerializer, SigninSerializer
 
 
@@ -18,8 +17,6 @@ class SignUpAPIView(APIView):
         serializer = CustomUserSerializer()
         if serializer.auth_validate(request.data):
             return Response({"message": "사용자 인증이 완료되었습니다."})
-        
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 
 class SigninAPIView(APIView):
@@ -27,4 +24,4 @@ class SigninAPIView(APIView):
         serializer = SigninSerializer(data=request.data)
         respon = serializer.Signin(request.data)
         if respon:
-            return Response(respon, status=status.HTTP_200_OK)
+            return Response(respon)

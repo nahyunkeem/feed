@@ -1,12 +1,9 @@
-
+from .models import AuthCode
 from django.utils import timezone
 from django.forms import ValidationError
-from .models import AuthCode
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.password_validation import validate_password
-from django.contrib.auth.hashers import check_password
-from rest_framework import serializers, status
-from rest_framework.response import Response
+from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -47,10 +44,10 @@ class CustomUserSerializer(serializers.ModelSerializer):
         try:
             user=CustomUser.objects.get(username=username)
         except CustomUser.DoesNotExist:
-            raise serializers.ValidationError("없는 계정입니다.") 
+            raise serializers.ValidationError({"message": "없는 계정입니다."}) 
         
         if not user.check_password(password):
-            raise serializers.ValidationError("비밀번호가 올바르지 않습니다.")
+            raise serializers.ValidationError({"message": "비밀번호가 올바르지 않습니다."})
         
         
 
@@ -62,7 +59,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
                 expired_at__gt=timezone.now()       # 인증 코드가 만료되지 않았나 확인
             )
         except AuthCode.DoesNotExist:
-            raise serializers.ValidationError("유효하지 않은 인증 코드입니다.")
+            raise serializers.ValidationError({"message": "유효하지 않은 인증 코드입니다."})
 
         # 인증 완료 후 인증 코드 삭제 
         auth_code_obj.delete()
@@ -85,7 +82,7 @@ class SigninSerializer(serializers.ModelSerializer):
         password = data.get("password", None)
 
         if not username or not password:
-            raise serializers.ValidationError({"message": "계정과 비밀번호를 입력해주세요."})
+            raise serializers.ValidationError({"message": "계정과 비밀번호 입력이 필요합니다."})
 
         user = authenticate(username=username, password=password)
 
