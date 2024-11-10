@@ -98,3 +98,16 @@ class SigninSerializer(serializers.ModelSerializer):
             "access": str(access),
             }
 
+
+class SignoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+
+    def validate_refresh(self, data):
+        try:
+            self.token = RefreshToken(data)
+        except Exception:
+            raise serializers.ValidationError({"message": "리프레쉬 토큰 입력이 필요합니다."})
+        return data
+
+    def save(self, **kwargs):
+        self.token.blacklist()
