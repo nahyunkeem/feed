@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Post, Hashtag
+from django.contrib.auth import get_user_model
 
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,10 +11,9 @@ class PostSerializer(serializers.ModelSerializer):
             'content',
         ]
 
+
 class PostListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Post, Hashtag
-        fields = [
-            'hashtag',
-            'type',
-        ]
+        model = Post
+        fields = ['title', 'content', 'created_at']
+
