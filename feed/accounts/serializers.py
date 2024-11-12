@@ -77,7 +77,7 @@ class SigninSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['username', 'password']
 
-    def Signin(self, data):
+    def signin(self, data):
         username = data.get("username", None)
         password = data.get("password", None)
 
