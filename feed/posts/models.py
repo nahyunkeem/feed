@@ -25,8 +25,9 @@ class PostHashtag(models.Model):
     hashtag_id = models.ForeignKey(Hashtag, on_delete=models.CASCADE)
 
 
-class like(models.Model):
+class Like(models.Model):
     user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
     is_like = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
