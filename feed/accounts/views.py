@@ -23,7 +23,7 @@ class SignUpAPIView(APIView):
 class SigninAPIView(APIView):
     def post(self, request):
         serializer = SigninSerializer(data=request.data)
-        respon = serializer.Signin(request.data)
+        respon = serializer.signin(request.data)
         if respon:
             return Response(respon)
 
