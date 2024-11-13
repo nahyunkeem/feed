@@ -27,13 +27,3 @@ class SigninAPIView(APIView):
         if respon:
             return Response(respon)
 
-
-class SignoutAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-    
-    def post(self, request):
-        serializer = SignoutSerializer(data=request.data)
-        
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response({"message": "로그아웃이 완료되었습니다."})
