@@ -1,6 +1,6 @@
 from datetime import timedelta
-from django.utils import timezone
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 import random
 
@@ -22,5 +22,4 @@ class AuthCode(models.Model):
     def save(self, *args, **kwargs):
         self.expired_at = timezone.now() + timedelta(days=1)
         self.auth_code = random.randint(100000, 999999)
-        # print(self.auth_code)
         super().save(*args, **kwargs)

@@ -1,8 +1,8 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from .serializers import CustomUserSerializer, SigninSerializer, SignoutSerializer
+from .serializers import CustomUserSerializer, SigninSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 class SignUpAPIView(APIView):
@@ -20,20 +20,6 @@ class SignUpAPIView(APIView):
             return Response({"message": "사용자 인증이 완료되었습니다."})
 
 
-class SigninAPIView(APIView):
-    def post(self, request):
-        serializer = SigninSerializer(data=request.data)
-        respon = serializer.signin(request.data)
-        if respon:
-            return Response(respon)
+class SigninAPIView(TokenObtainPairView):
+    serializer_class = SigninSerializer
 
-
-class SignoutAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-    
-    def post(self, request):
-        serializer = SignoutSerializer(data=request.data)
-        
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response({"message": "로그아웃이 완료되었습니다."})
