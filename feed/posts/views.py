@@ -1,11 +1,8 @@
-from django.shortcuts import render
-from rest_framework.generics import ListAPIView
 from .models import Post
-from django.db import models
 from .serializers import PostSerializer, PostListSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from rest_framework.generics import ListAPIView
 
 
 class PostListView(ListAPIView):
@@ -21,23 +18,28 @@ class PostListView(ListAPIView):
             qs = qs.filter(type=type)
 
         return qs
+
+
+class PostListAPIView(ListAPIView):
+    serializer_class = PostListSerializer
+
+    def get_queryset(self):
+        queryset = Post.objects.all()
+        query = self.request.GET.get('search')
         
-
-
-class PostListAPIView(APIView):
-    def get(self, request):
-        query = request.GET.get('search')
-        posts = Post.objects.all()
-
         if query:
-            posts = posts.filter(content__icontains=query)
+            queryset = queryset.filter(content__icontains=query)
+        return queryset
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        
+        if not queryset.exists():
+            return Response([{
+                "title": None,
+                "content": None,
+                "created_at": None,
+            }])
 
-        else:
-            posts = Post.objects.all()
-
-        if posts.exists():
-            serializer = PostListSerializer(posts, many=True)
-            return Response(serializer.data)
-        return Response({"message": "검색된 게시물이 없습니다."})
-
-
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)

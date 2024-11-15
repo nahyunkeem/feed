@@ -4,6 +4,7 @@ from .models import Post
 from django.db import models
 from django.contrib.auth import get_user_model
 
+
 class PostSerializer(serializers.ModelSerializer):
     # 모든 타입 정의 
     class AllType(models.TextChoices):
