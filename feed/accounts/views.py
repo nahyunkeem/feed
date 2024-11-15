@@ -16,7 +16,7 @@ class SignUpAPIView(APIView):
         
     def patch(self, request):
         serializer = CustomUserSerializer()
-        if serializer.auth_validate(request.data):
+        if serializer.update(request.data):
             return Response({"message": "사용자 인증이 완료되었습니다."})
 
 
