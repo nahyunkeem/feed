@@ -1,10 +1,14 @@
 from django.shortcuts import get_object_or_404
 from .models import Like, Post
 from .serializers import PostSerializer, PostListSerializer
+from rest_framework import generics, filters
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.pagination import PageNumberPagination
 import requests
 
 
@@ -48,6 +52,32 @@ class PostListAPIView(ListAPIView):
         return Response(serializer.data)
 
 
+class CustomPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_count'
+
+    def get_paginated_response(self, data):
+        return Response({
+            'pages': self.page.paginator.num_pages,
+            'page': self.page.number,
+            'post': data,
+        })
+
+
+class CustomOrdering(OrderingFilter):
+    ordering_param = 'order_by'
+    ordering_fields = ['created_at', 'updated_at', 'like_count', 'share_count', 'view_count ']
+    ordering = ['-created_at']
+
+
+class PostList(generics.ListAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    filter_backends = [SearchFilter, CustomOrdering]
+    search_fields = ['title', 'content']
+    pagination_class = CustomPagination
+    
+ 
 # 게시물 좋아요 기능
 class PostLike(APIView):
     permission_classes = [IsAuthenticated]    # 인증된 사용자만 접근 가능
