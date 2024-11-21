@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from feed.accounts import models
-from .models import Post
+from .models import Like, Post
 from django.db import models
 from django.contrib.auth import get_user_model
 
@@ -30,3 +30,11 @@ class PostListSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['title', 'content', 'created_at']
 
+# 게시물 좋아요 (목록. 상세)
+class PostLikeSerializer(serializers.ModelSerializer):
+    likes_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Like
+        fields = ['user_id', 'post_id', 'is_like','created_at']
+        read_only_fields = ['created_at']
