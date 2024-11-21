@@ -108,6 +108,7 @@ class PostLike(APIView):
             return False
 
 
+# 공유 기능
 class PostShare(APIView):
     permission_classes = [IsAuthenticated]    # 인증된 사용자만 접근 가능
 
