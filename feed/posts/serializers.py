@@ -30,6 +30,15 @@ class PostListSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['title', 'content', 'created_at']
 
+
+class PostRetrieveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ['content_id', 'type', 'title', 'content', 
+                'view_count', 'like_count', 'share_count', 'created_at', 
+                'updated_at']
+
+
 # 게시물 좋아요 (목록. 상세)
 class PostLikeSerializer(serializers.ModelSerializer):
     likes_count = serializers.SerializerMethodField()
@@ -38,3 +47,4 @@ class PostLikeSerializer(serializers.ModelSerializer):
         model = Like
         fields = ['user_id', 'post_id', 'is_like','created_at']
         read_only_fields = ['created_at']
+
