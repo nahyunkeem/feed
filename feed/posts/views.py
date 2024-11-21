@@ -57,7 +57,7 @@ class PostLike(APIView):
         # 게시물 가져오기
         post = get_object_or_404(Post, id=pk)
         # 좋아요 요청한 유저의 이전 기록 확인
-        like, created_at = Like.objects.get_or_create(
+        like, created = Like.objects.get_or_create(   # created_at 과는 다름
             user_id=request.user,
             post_id=post
         )
@@ -102,6 +102,51 @@ class PostLike(APIView):
             # 해당 타입 api에 좋아요 요청
             response = requests.post(f"{endpoints[type]}{content_id}")
             return response.status_code == 200
+        # e는 요청 중 발생할 수 있는 모든 예외(에러)를 의미
+        except requests.RequestException as e:
+            print(f"ERROR: SNS API 호출 실패 - {e}")
+            return False
+
+
+class PostShare(APIView):
+    permission_classes = [IsAuthenticated]    # 인증된 사용자만 접근 가능
+
+    def post(self, request, pk):
+        # 게시물 가져오기
+        post = get_object_or_404(Post, id=pk)
+
+        # 공유 타입 가져오기
+        share_type = request.data.get('type')
+        # 타입 api 가져오기
+        if not self.type_share(share_type, post.content_id):
+            return Response(
+                {"error": f"{share_type} 공유 처리에 실패했습니다."},
+                status=503
+            )
+        # 공유를 했다면 공유 수 증가
+        post.share_count += 1
+        post.save(update_fields=['share_count'])
+
+        return Response({"message": "공유 완료", "share_count": post.share_count}, status=200)
+
+    # type을 공유와 동기화
+    def type_share(self, type, content_id):
+
+        endpoints = {
+            'facebook': 'https://www.facebook.com/share/',
+            'twitter': 'https://www.twitter.com/share/',
+            'instagram': 'https://www.instagram.com/share/',
+            'threads': 'https://www.threads.net/share/',
+        }
+        # 타입이 지정되지 않았다면 true 반환
+        if type not in endpoints:
+            return True
+
+        try:
+            # 해당 타입 api에 좋아요 요청
+            response = requests.post(f"{endpoints[type]}{content_id}")
+            return response.status_code == 200
+        # e는 요청 중 발생할 수 있는 모든 예외(에러)를 의미
         except requests.RequestException as e:
             print(f"ERROR: SNS API 호출 실패 - {e}")
             return False
